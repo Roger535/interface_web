@@ -1,0 +1,246 @@
+<div class="form-horizontal request-message-form" style="margin-left: -30px;">
+    <div class="form-group">
+        <label class="col-sm-1 control-label column">请求地址：</label>
+        <div class="form-group col-sm-2 column sel-form">
+            <select class="form-control auto-save" id="request_type" name="request_type">
+                {% for request_type in request_types %}
+                    {% if request_type.0 == it.request_type %}
+                        <option selected="selected">{{ it.request_type }}</option>
+                    {% else %}
+                        <option>{{ request_type.0 }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group col-sm-4 column path-form">
+            <input type="text" class="form-control auto-save" id="path" name="path" value="{{ it.path }}"/>
+            <div class="url-show" id="span" style="display:none;">
+                <table class="table table-bordered" id="url_para">
+                    <thead>
+                    <tr>
+                        <td>键</td>
+                        <td>值</td>
+                        <td>删除</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for url in url_para_table %}
+                        <tr class="auto-save" id="{{ url.id }}" name="urlTr">
+                            <td>
+                                <input type="text" class="form-control" id="key" name="url_para_key"
+                                       value="{{ url.name }}"/>
+                            </td>
+                            <td>
+                                <div class="value-box">
+                                    <select  class="variableChoice" name="var_table">
+                                        <option></option>
+                                        {% for v in variable_global_table %}
+                                            <option value="{{ v.name }}">{{ v.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <input class="inputAfterSelect" type="text" value="{{ url.value }}" data-value-type="{{ url.type }}"
+                                           placeholder="请输入或选择数据"/>
+                                </div>
+                            </td>
+                            <td><i class="glyphicon glyphicon-trash del" name="del_url" type="icon"></i></td>
+                        </tr>
+                    {% endfor %}
+                    <tr class="auto-save" id="urlTr" name="urlTr">
+                        <td>
+                            <input type="text" class="form-control" id="key" name="url_para_key"
+                                   style="height: 26px;" value=""/>
+                        </td>
+                        <td>
+                            <div class="value-box">
+                                <select class="variableChoice" name="var_table">
+                                    <option></option>
+                                    {% for v in variable_global_table %}
+                                        <option value="{{ v.name }}">{{ v.name }}</option>
+                                    {% endfor %}
+                                </select>
+                                <input class="inputAfterSelect" type="text" value="" data-value-type="text" placeholder="请输入或选择数据"/>
+                            </div>
+                      </td>
+                      <td><i class="glyphicon glyphicon-trash del" name="del_url" type="icon"></i></td>
+                  </tr>
+                  </tbody>
+              </table>
+              <div class="form-group col-sm-1 column">
+                  <i class="glyphicon glyphicon-plus" type="icon" title="增加" value="增加" onclick="add_urlTr()"></i>
+              </div>
+          </div>
+        </div>
+        <div class="form-group col-sm-3 column">
+          <input type="button" class="btn btn-primary btn-sm" id="url_para" name="url_para" value="添加URL参数" onclick="add_url_para()"/>
+        </div>
+    </div>
+    <div class="form-group" >
+        <label class="col-sm-1 control-label">请求头：</label>
+        <div class="tab-request_data col-sm-9"  style="margin-left:-15px">
+            <table class="table table-bordered" id="request_head">
+                <thead>
+                    <tr>
+                        <td>名称</td>
+                        <td>值</td>
+                        <td>描述</td>
+                        <td>删除</td>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for head in head_para_request_table %}
+                    <tr class="auto-save" id="{{ head.id }}" name="reqHeadTr">
+                        <td>
+                            <input name="name" type="text" style="width:150px;vertical-align:middle;"
+                                   maxlength="40" value="{{ head.name }}">
+                        </td>
+                        <td>
+                            <div class="value-box">
+                                <select class="variableChoice" name="var_table">
+                                    <option></option>
+                                    {% for v in variable_global_table %}
+                                        <option value="{{ v.name }}">{{ v.name }}</option>
+                                    {% endfor %}
+                                </select>
+                                <input class="inputAfterSelect" type="text" value="{{ head.value }}" data-value-type="{{ head.type }}"
+                                       placeholder="请输入或选择数据"/>
+                            </div>
+                        </td>
+                        <td>
+                            <input name="desc" type="text" style="width:150px;vertical-align:middle;" maxlength="40" value="{{ head.desc }}">
+                        </td>
+                        <td><i class="glyphicon glyphicon-trash del" type="icon" name="del_reqHead"></i></td>
+                    </tr>
+                {% endfor %}
+                <tr class="auto-save" id="reqHeadTr" name="reqHeadTr">
+                    <td>
+                        <input name="name" type="text" style="width:150px;vertical-align:middle;" maxlength="40">
+                    </td>
+                    <td>
+                        <div class="value-box">
+                            <select class="variableChoice" name="var_table">
+                                <option></option>
+                                {% for v in variable_global_table %}
+                                    <option value="{{ v.name }}">{{ v.name }}</option>
+                                {% endfor %}
+                            </select>
+                            <input class="inputAfterSelect" type="text" value="" data-value-type="text"
+                                   placeholder="请输入或选择数据"/>
+                        </div>
+                    </td>
+                    <td>
+                     <input name="desc" type="text" id="desc" style="width:150px;vertical-align:middle;"      maxlength="40"  >
+                    </td>
+                    <td><i class="glyphicon glyphicon-trash del" type="icon" name="del_reqHead"></i></td>
+                </tr>
+
+            </tbody>
+          </table>
+            <div class=="form-group">
+                <p id='p_header' class="form-group" style="margin:-15px 0px 0px 0px">
+                    <a id="web_header" onclick="setHeader('web')" >Web定制头部</a>&nbsp;/
+                    <a id="mobile_header" onclick="setHeader('mobile')" >Mobile定制头部</a>
+                </p>
+            </div>
+            <div class="form-group" style="margin:10px 10px 10px 0px;">
+                <i class="glyphicon glyphicon-plus" type="icon" title="增加" value="增加" onclick="add_reqHeadTr()" style="margin-top: -20px;"></i>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-1 control-label column">请求数据：</label>
+        <div class="col-sm-9 control-label" align="left" id="variable_type">
+            <label class="col-sm-2" style="min-width:100px;"><input  type="radio" value="3" name="request_data_source" checked="checked" onclick="aCheck1()"/>格式化</label>
+            <label class="col-sm-2"><input  type="radio" value="4" name="request_data_source" onclick="bCheck2()"/>原始</label>
+        </div>
+        <div class="form-group col-sm-9 data-display" style="margin-left: 120px;">
+            <div id="span1" style="display:block;margin-left: 15px;">
+                <table class="table table-bordered col-sm-9" id="request_body">
+                    <thead>
+                      <tr>
+                        <td>名称</td>
+                        <td>类型</td>
+                        <td>测试数据</td>
+                        <td>描述</td>
+                        <td>删除</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for body in body_para_request_table %}
+                        <tr class="auto-save" id="{{ body.id }}" name="reqBodyTr">
+                         <td>
+                             <input type="text" name="para_name" style="width:150px;vertical-align:middle;"      maxlength="40" value="{{ body.name }}"/>
+                         </td>
+                         <td>
+                              <select class="type-ch form-control typeChoice"  name="para_type"  style="width:150px;vertical-align:middle;">
+                                  {% for type in para_types %}
+                                      {% if body.type == type %}
+                                        <option value="{{ body.type }}" selected>{{ body.type }}</option>
+                                      {% else %}
+                                          <option>{{ type }}</option>
+                                      {% endif %}
+                                  {% endfor %}
+                              </select>
+                         </td>
+                         <td>
+                            <div class="value-box">
+                                <select class="variableChoice" name="var_table" disabled="disabled">
+                                    <option></option>
+                                    {% for v in variable_global_table %}
+                                        <option value="{{ v.name }}">{{ v.name }}</option>
+                                    {% endfor %}
+                                </select>
+                                <input type="text" value="{{ body.value }}" placeholder="请输入或选择数据" readonly="readonly"/>
+                            </div>
+                         </td>
+                         <td>
+                             <input name="desc" type="text" id="desc" value="{{ body.desc }}">
+                         </td>
+                         <td><i class="glyphicon glyphicon-trash del" type="icon" name="del_reqBody"></i></td>
+                        </tr>
+                    {% endfor %}
+                    <tr class="auto-save" id="reqBodyTr" name="reqBodyTr">
+                        <td>
+                            <input type="text" name="para_name" id="para_name" style="width:150px;vertical-align:middle;" maxlength="40"/>
+                        </td>
+                        <td>
+                            <select class="type-ch form-control typeChoice" name="para_type" style="width:150px;vertical-align:middle;" >
+                                <option>Text</option>
+                                <option>GlobalVar</option>
+                                <option>File</option>
+                            </select>
+                        </td>
+                        <td>
+                            <div class="value-box">
+                                <select class="variableChoice" name="var_table" disabled="disabled">
+                                    <option></option>
+                                    {% for v in variable_global_table %}
+                                        <option value="{{ v.name }}">{{ v.name }}</option>
+                                    {% endfor %}
+                                </select>
+                                <input type="text" value="" placeholder="请输入或选择数据" readonly="readonly"/>
+                            </div>
+                         </td>
+                         <td>
+                             <input name="desc" type="text"  />
+                         </td>
+                         <td><i class="glyphicon glyphicon-trash del" type="icon" name="del_reqBody"></i></td>
+                     </tr>
+
+                  </tbody>
+              </table>
+            </div>
+            <div id="span2" style="display:none;margin-left: -15px;">
+                <textarea class="form-control" id="request_data_origin" name="request_data_origin" style="margin: 0px 10px 10px 28px;height: 100px;"> </textarea>
+            </div>
+            <div class="form-group col-sm-offset-1 column" style="margin:-10px 0px 10px 15px;">
+                <i class="glyphicon glyphicon-plus" type="icon" title="增加" value="增加" onclick="add_reqBodyTr()"></i>
+            </div>
+        </div>
+    </div>
+    <div class="form-group data-display">
+        <label class="col-sm-1 control-label column ">数据展示：</label>
+        <div class="col-sm-9 column" style="margin-left: -15px;">
+            <textarea class="form-control auto-save" id="display_request_body" name="display_request_body" style="height: 100px"></textarea>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,116 @@
+{% extends "site_base.html" %}
+
+{% load i18n %}
+
+{% block head_title %}{% endblock %}
+
+{% block body_class %}home{% endblock %}
+
+{% block body_base %}
+
+    <div class="container-fluid" style="height:100%;">
+        <div class="row">
+            <div class="col-sm-2 col-md-2 sidebar1">
+            </div>
+            <div class="col-sm-8 col-md-8 main">
+                {% block main %}
+                    <div class="row">
+                        <div class="table-responsive table-project">
+                            <div class="form-group text-right">
+                                <button type="button" onClick="toggle()" class="btn btn-primary btn-sm" >新建项目</button>
+                            </div>
+                            <table class="table table-bordered" id="project_manage">
+                                <thead class="thead">
+                                    <tr>
+                                        <th class="tc col1">项目名称</th>
+                                        <th class="tc col2">项目描述</th>
+                                        <th class="tc col1">负责人</th>
+                                        <th class="tc col3">删除</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for project in project_table %}
+                                        <tr class="success">
+                                            <td class="tc col1"><a  href="{% url 'homepage' project.id %}">{{ project.name }}</a></td>
+                                            <td class="tc col2">{{ project.desc }}&nbsp;</td>
+                                            <td class="tc col1">{{ project.user}}&nbsp;</td>
+                                            <td class="tc col3">
+                                                {% if request.user.username == "admin" %}
+                                                    <button class="btn btn-primary btn-xs" id="del_project" data-val="{{ project.id }}" onclick="delete_project(this)">删除</button>
+                                                {% else %}
+                                                    <button class="btn btn-primary btn-xs" id="del_project" data-val="{{ project.id }}" disabled="disabled" onclick="delete_project(this)">删除</button>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                {% endblock %}
+            </div>
+            <div class="col-sm-2 col-md-2 sidebar" style="margin :5px 10px 5px 20px;padding:5px 10px 5px 10px;height: 830px;">
+            </div>
+        </div>
+    </div>
+<script>
+        function toggle(){
+            var $mask = $('#mask'), $inputbox = $('#inputbox');
+            if ($inputbox.hasClass('hide')) {
+                $inputbox.removeClass('hide');
+                $mask.removeClass('hide');
+            } else {
+                $inputbox.addClass('hide');
+                $mask.addClass('hide');
+            }
+        }
+        function delete_project(_this) {
+            if (window.confirm('确定要删除此项目吗？')) {
+                var $this = $(_this);
+                $.ajax({
+                    url: "{% url 'delete_project' %}",
+                    type: "POST",
+                    data: $this.data('val') + '',
+                    success: function (data) {
+                        $this.parents("tr").remove();
+                    },
+                    error: function() {
+                        alert('删除失败，请重试');
+                    }
+                });
+            }
+        }
+</script>
+<style>
+.box{padding-top: 30px;background-color:#fff;left:40%;margin:-200px 1px -200px 1px;border:1px #111 solid;position:fixed;top:50%;width:400px;height:300px;z-index:1031;}
+.mask{position:fixed;top:0;left:0;bottom:0;right:0;background-color:rgba(0,0,0,.5);z-index:1030}
+.box .x{font-size:28px;padding:5px;position:absolute;right:0;top:0;text-decoration:none;height:30px;width:30px;line-height:30px}
+.box input{width:50%;font-size:18px}
+</style>
+    <div class="mask hide" id="mask"></div>
+    <div id='inputbox' class="box hide">
+        <a class='x' href='' onclick="toggle()">×</a>
+        <div class="container-fluid">
+            <form class="form-horizontal" role="form" action="{% url 'create_project' %}" method="post">
+                {% csrf_token %}
+                <div class="row">
+                    <label for="project_name" class="col-sm-3 control-label">项目名称:</label>
+                    <div class="form-group col-sm-9">
+                        <input type="text" class="form-control" id="project_name" name="project_name"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <label for="project_desc" class="col-sm-3 control-label">项目描述:</label>
+                    <div class="form-group col-sm-9">
+                        <textarea class="form-control" id="project_desc" name="project_desc" rows="3" cols="20" STYLE="font-size:10pt;font-family:verdana;color:#333333"></textarea>
+                    </div>
+                </div>
+                <div class="form-group" align="left">
+                    <div class="col-sm-offset-3 col-sm-10" >
+                        <button type="submit" class="btn btn-primary" style="margin-left: -13px;">确定</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

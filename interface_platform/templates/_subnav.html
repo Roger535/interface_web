@@ -1,0 +1,142 @@
+<div class="nav my-nav">
+    <div class="row-fluid">
+        <div class="nav-pro-list">
+            {% block project-list %}
+                <select class="form-control" name="selected_pro" id="selected_pro"
+                        onchange="window.location.href = this.value">
+                    {% for project in project_table %}
+                        {% if selected_project.id == project.id %}
+                            <option name="{{ selected_project.id }}"
+                                    value="{% url "current_project" selected_project.id %}"
+                                    selected="selected">{{ selected_project.name }}</option>
+                        {% else %}
+                            <option name="{{ project.id }}"
+                                    value="{% url "current_project" project.id %}">{{ project.name }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            {% endblock %}
+        </div>
+        <div class="nav-tests" style="margin-left: 30px;">
+            <ul class="nav-test" id="nav-test">
+                 <li class="test_cases" style="{# background-color: #eee; #}color:#337ab7">
+                    <a href="{% url 'current_project' selected_project.id %}">
+                        <i class="glyphicon glyphicon-list"></i>&nbsp;测试用例
+                    </a>
+                </li>
+                <li class="test_executions" style="color:#337ab7">
+                    <a href="{% url 'execution' selected_project.id %}">
+                        <i class="glyphicon glyphicon-tasks"></i>&nbsp;测试执行
+                    </a>
+                </li>
+            </ul>
+            <ul class="nav nav-pro">
+                <div class="dropdown" style=" float: left" id="projectConfig">
+                    <span class="dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="false">
+                        <span class="glyphicon glyphicon-cog"></span>
+                        项目配置
+                        <span class="caret"></span>
+                    </span>
+                    <ul class="dropdown-menu pull-right ddt" role="menu" aria-labelledby="dropdownMenu1">
+                        <li>
+                            <a role="menuitem" tabindex="-1" class="add-project">新建项目</a>
+                        </li>
+                    </ul>
+                </div>
+            </ul>
+        </div>
+    </div>
+    <div class="modal" id="project-modal" tabindex="-1" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h3 class="modal-title" id="myModalLabel" align="center">
+                        新建项目
+                    </h3>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal project-form" role="form" action="{% url 'create_project' %}"
+                          method="post">
+                        {% csrf_token %}
+                        <div class="row">
+                            <label for="project_name" class="col-sm-3 control-label">项目名称:</label>
+                            <div class="form-group col-sm-9">
+                                <input type="text" class="form-control" id="project_name" name="project_name" required/>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <label for="project_desc" class="col-sm-3 control-label">项目描述:</label>
+                            <div class="form-group col-sm-9">
+                                <textarea class="form-control" id="project_desc" name="project_desc" rows="3" cols="20"
+                                          STYLE="font-size:10pt;font-family:verdana;color:#333333"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group" align="left">
+                            <div class="col-sm-offset-3 col-sm-10">
+                                <button type="submit" class="btn btn-primary" style="margin-left: -13px;">确定</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal" id="m_del_modal" tabindex="-1" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" id="myModalLabel" align="left">
+                        提示
+                    </h4>
+                </div>
+                <div class="modal-body" style="text-align: center">
+                    <div class="icon">
+                        <i class="icon-question-sign" style="font-size: 45px;color:#04c"></i>
+                    </div>
+                    <span class="text">确定删除此用例（集）吗？</span>
+                </div>
+                <div class="modal-footer" id="case-modal-footer" style="text-align: center">
+                    <button type="button" class="btn btn-primary btn-sm del_node" id="del_node" onclick="del_Node()">
+                        确定
+                    </button>
+                    <button type="button" class="btn btn-default btn-sm" id="cancel_del" data-dismiss="modal">取消
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal" id="m_re_modal" tabindex="-1" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" id="myModalLabel" align="left">
+                        提示
+                    </h4>
+                </div>
+                <div class="modal-body" style="text-align: center">
+                    <div class="icon">
+                        <i class="icon-warning-sign" style="font-size: 45px;color:#04c"></i>
+                    </div>
+                    <span class="text">节点名称不能为空</span>
+                </div>
+                <div class="modal-footer" id="case-modal-footer" style="text-align: center">
+                    <button type="button" class="btn btn-primary btn-sm" id="confirm" data-dismiss="modal">
+                        确定
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+{# JQuery引用文件在底部所以这里使用不了，需要特别引用 #}
+<script type="text/javascript" src='/site_media/static/js/jquery-3.1.1.min.js'></script>
+<script type="text/javascript" src='/site_media/static/js/jquery.cookie.js'></script>
+<script type="text/javascript">
+    $.cookie("selected_project", {{ selected_project.id }}, {path: '/'});
+</script>

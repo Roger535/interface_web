@@ -1,6 +1,5 @@
-# -*- coding:utf-8 -*-
+# -*- coding: UTF-8 -*-
 import os
-
 
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 PACKAGE_ROOT = os.path.abspath(os.path.dirname(__file__))
@@ -9,17 +8,18 @@ BASE_DIR = PACKAGE_ROOT
 DEBUG = True
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'interface_platform',
-        'USER': 'root',
-        'PASSWORD': '123456',
-        'HOST': '127.0.0.1',
-        'PORT': '3306',
+    "default": {
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": "interface_platform",
+        "USER": "root",
+        "PASSWORD": "123456",
+        "HOST": "127.0.0.1",
+        "PORT": "3306",
     }
 }
 
 ALLOWED_HOSTS = []
+
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -28,7 +28,7 @@ ALLOWED_HOSTS = []
 # timezone as the operating system.
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
-TIME_ZONE = "UTC"
+TIME_ZONE = None
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
@@ -65,7 +65,6 @@ STATIC_ROOT = os.path.join(PACKAGE_ROOT, "site_media", "static")
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
 STATIC_URL = "/site_media/static/"
-
 
 # Additional locations of static files
 STATICFILES_DIRS = [
@@ -130,6 +129,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.sites",
     "django.contrib.staticfiles",
+    'django_extensions',
+    'rest_framework',
 
     # theme
     "bootstrapform",
@@ -142,11 +143,12 @@ INSTALLED_APPS = [
 
     # project
     "interface_platform",
+    "execution",
 ]
 
-
 # log日志存储路径
-LOG_ROOT = os.path.join(PROJECT_ROOT, "static", "log")
+LOG_ROOT = os.path.join(PACKAGE_ROOT, "log")
+LOGGER_NAME = "eat_logger"
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
@@ -154,41 +156,46 @@ LOG_ROOT = os.path.join(PROJECT_ROOT, "static", "log")
 # See http://docs.djangoproject.com/en/dev/topics/logging for
 # more details on how to customize your logging configuration.
 LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'simple': {
-            'format': '%(asctime)s [%(module)s:%(funcName)s] [%(levelname)s]- %(message)s',
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "standard": {
+            "format": "%(asctime)s [%(module)s:%(funcName)s][%(levelname)s]: %(message)s"
         },
     },
-    'filters': {
-    },
-    'handlers': {
-        'default': {
-            'level': 'DEBUG',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': LOG_ROOT+'\log.txt',
-            'maxBytes': 1024 * 1024 * 5,  # 文件大小
-            'backupCount': 5,  # 备份数
-            'formatter': 'simple',
-        },
-        'console': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-            'formatter': 'simple'
-        },
-    },
-    'loggers': {
-        'my_log': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': True
-        },
-        'file_log': {
-            'handlers': ['default'],
-            'level': 'INFO',
-            'propagate': True
+    "filters": {
+        "require_debug_false": {
+            "()": "django.utils.log.RequireDebugFalse"
         }
+    },
+    "handlers": {
+        "mail_admins": {
+            "level": "ERROR",
+            "filters": ["require_debug_false"],
+            "class": "django.utils.log.AdminEmailHandler"
+        },
+        "eat": {
+            "level": "INFO",
+            # "class": "logging.handlers.RotatingFileHandler",
+            # 这个Handler会覆盖之前的日志
+            "class": "interface_platform.model.itsettings.OverwriteFileHandler",
+            "filename": LOG_ROOT + "/all.log",  # 默认日志文件
+            # "maxBytes": 1024 * 1024 * 5,  # 5 MB
+            # "backupCount": 5,
+            "formatter": "standard",
+        },
+    },
+    "loggers": {
+        "django.request": {
+            "handlers": ["mail_admins"],
+            "level": "ERROR",
+            "propagate": True,
+        },
+        "eat_logger": {
+            "handlers": ["eat"],
+            "level": "INFO",
+            "propagate": True,
+        },
     }
 }
 
@@ -209,3 +216,4 @@ ACCOUNT_USE_AUTH_AUTHENTICATE = True
 AUTHENTICATION_BACKENDS = [
     "account.auth_backends.UsernameAuthenticationBackend",
 ]
+

@@ -1,0 +1,42 @@
+{% extends "mybase.html" %}
+
+{% block main %}
+    <div class="row">
+        <div class="text-left">
+{#            <a class="btn btn-primary btn-sm new-var" role="button">新建变量</a> &nbsp;#}
+            <a class="btn btn-primary btn-sm" href="{% url 'create_variable' selected_project.id %}" role="button">新建变量</a> &nbsp;
+            <input type="search" name="interface_search" class="form-control" placeholder="搜索..."/>
+        </div>
+    </div>
+    <p></p>
+    <div class="row">
+        <div class="table-responsive table-variable">
+            <table class="table table-bordered" id="variable_manage">
+                <thead class="thead">
+                <tr>
+                    <th class="tv col1">名称</th>
+                    <th class="tv col2">类别</th>
+                    <th class="tv col3">项目</th>
+                    <th class="tv col4">创建者</th>
+                    <th class="tv col5">创建时间</th>
+                    <th class="tv col4">操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for var in variable_table %}
+                    <tr class="success">
+                        <td class="tv col1" title="{{ var.name }}" >
+                            <a class="var-href" href="{% url 'variable_detail' selected_project.id var.id %}">{{ var.name }}</a></td>
+                        <td class="tv col2" title="{{ var.type }}">{{ var.type }}</td>
+                        <td class="tv col3" title="{{ var.project }}">{{ var.project }}</td>
+                        <td class="tv col4" title="{{ var.creator }}">{{ var.creator }}</td>
+                        <td class="tv col5" title="{{ var.timestamp|date:"Y-m-d H:i:s" }}">{{ var.timestamp|date:"Y-m-d H:i:s" }}</td>
+                        <td class="tv col4"><i class="glyphicon glyphicon-trash var-delete" type="icon" name="{{ var.id }}"
+                                               title="删除" value="删除"></i></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

@@ -52,6 +52,10 @@ gulp.task('build:copy-mystyles', function () {
     return tasks.copy(config.mystyles.source).pipe(gulp.dest(config.mystyles.dist));
 });
 
+gulp.task('build:copy-scripts', function () {
+    return tasks.copy(config.scripts.source).pipe(gulp.dest(config.scripts.mydist));
+});
+
 gulp.task('build:script-include', function () {
     return tasks.handlebars(config.templates.manifestPath, config.templates.scriptsTemplate, config.staticUrlRoot)
         .pipe(gulp.dest(config.templates.destination));
@@ -86,8 +90,6 @@ gulp.task('optimize:css', function () {
   return tasks.optimizecss(config.optimize.css.source, config.optimize.css.options, config.optimize.css.dist);
 });
 
-
-
 /**
  * Compound Tasks
  */
@@ -97,7 +99,7 @@ gulp.task('watch', function watch() {
 });
 
 gulp.task('build', gulp.series([
-  'xo',
+  // 'xo',
   'build:clean',
   gulp.parallel([
     'build:styles',
@@ -105,6 +107,7 @@ gulp.task('build', gulp.series([
     'build:copy-icons',
     'build:copy-images',
     'build:copy-mystyles',
+    'build:copy-scripts',
   ]),
   'manifest',
   'build:script-include',

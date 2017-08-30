@@ -1,0 +1,31 @@
+{% extends "angular_base.html" %}
+
+{% block angular-app %}
+    {% include "_exec_subnav.html" %}
+    <div class="nav_top" style="border-bottom: 1px solid #d4d4d4;"
+         ng-controller="ExecutionList">
+        {% block nav_execution %}
+            {% verbatim %}
+            <select class="form-control" name="executions_menu" id="executions_menu"
+                    style="width:250px;margin-left: 5px" ng-model="selectedOption"
+                    ng-options="option.name for option in testsuites" ng-change="suite_report()"></select>
+            {% endverbatim %}
+            <a href="{% url 'new_suite' selected_project.id %}" class="btn btn-primary btn-sm" id="execution_new"
+               style="margin-left: 45px">新建执行集
+            </a>
+        {% endblock %}
+    </div>
+    <div class="row wrapper" style="overflow:hidden">
+        <div class="sidebar" style="margin-top: -12px;height: calc(100% - 170px);">
+            {% block nav-sidebar %}
+                {% include "_navigation_side.html" %}
+            {% endblock %}
+        </div>
+        <div class="main"
+             style="border-left:1px solid #eee;margin:5px 20px 5px 20px;padding:1px 10px 5px 40px; top: 125px;height: calc(100% - 170px);">
+            {% block main %}
+            {% endblock %}
+        </div>
+        <div class="clear" style="clear:both"></div>
+    </div>
+{% endblock %}

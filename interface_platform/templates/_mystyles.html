@@ -1,0 +1,194 @@
+<link href='/site_media/static/css/site-a6c38886d5.css' rel='stylesheet' />
+<link href='/site_media/static/css/dashboard.css' rel='stylesheet' />
+<link href='/site_media/static/css/bootstrap.min.css'  rel='stylesheet' />
+<link href='/site_media/static/css/font-awesome.css'  rel='stylesheet' />
+<link href='/site_media/static/css/bootstrap-theme.css' rel='stylesheet' />
+<link href='/site_media/static/css/zTreeStyle/zTreeStyle.css' rel='stylesheet' />
+<style type="text/css">
+    body,html{min-height:100%;height:100%}
+    body{   font: 12px/1.5 "Hiragino Sans GB","Microsoft YaHei","\5FAE\8F6F\96C5\9ED1",helvetica,sans-serif;
+            font-size: 15px;
+            line-height: 1.42857143;
+            color: #333;
+            background-color: #fff; }
+    body{min-width:1200px}
+{#    ::-webkit-scrollbar{width:6px;height:6px;background-color:#F5F5F5}#}
+{#    ::-webkit-scrollbar-track{-webkit-box-shadow:inset 0 0 6px rgba(0,0,0,.2);border-radius:10px;background-color:#F5F5F5}#}
+{#    ::-webkit-scrollbar-thumb{border-radius:10px;background-color:rgba(0,0,0,.6)}#}
+    hr{border: 0px solid #eee}
+
+    .navbar-default {background-color: #333}  {# 导航栏 #}
+    .navbar .container {width: auto;margin:0px 30px}
+    .navbar-nav .navbar-text{width:auto;min-width: 120px}{# 保证用户名在很长的情况下不会显示出问题 #}
+    .navbar-default .navbar-brand, .navbar-default .navbar-nav li a, .navbar-default .navbar-text {color:#eee}{# 导航栏字体灰白色 #}
+    .navbar-default .navbar-brand:hover , .navbar-default .navbar-nav li a:hover , .navbar-default .navbar-text:hover {color:#05cce2}
+    ul.navbar-nav li{height:50px;line-height: 50px; width: 120px; text-align: center;margin: 0px;}
+    .navbar-nav a:hover, .my-nav a:hover{text-decoration:none;}   /* 鼠标指针移动到链接上横线消失 */
+    .navbar-nav a:active{text-decoration:none;}
+    .select-menu {display:none;z-index:999; height:40px;line-height: 40px;background-color: #777;border-top: 1px solid #333;text-align: center;}{#资源配置选择框#}
+    .act{background-color: #777}
+
+    li.crt{background-color: #ccc}
+    .my-nav{height: 46px;line-height: 46px;border-bottom:1px solid #d4d4d4; margin:0px;}
+    .my-nav .form-control{width: 250px;margin: 0px 5px;}
+    ul.nav-test li {height: 45px;line-height:45px;display: inline;  float: left;  width: 100px;text-align: center}
+    ul.nav-test{margin-left: 15px;padding: 0px}
+    {#ul.nav-test :hover ,#} ul.nav-pro :hover{background-color: #eee}
+    ul.nav-pro{width: 120px;height: 45px;line-height:45px;float:right !important;display:inline; margin-top: -10px;padding:0px;color:#337ab7;text-align: center;}
+    .dropdown :hover{background-color:#eee;}
+    .dropdown-menu {min-width:90px;}
+
+    .glyphicon-magnet :hover, .glyphicon-wrench :hover{color: #05cce2}
+    .glyphicon:hover{color: #04c}
+    .btn-primary{color:#fff;border-color:#04c}
+
+    .wrapper{height:100%}
+{#    .wrapper .main{height:100%}#}
+    .main{border-left: none!important;margin:5px 20px 5px 20px;padding:5px 10px 5px 40px}
+    .sidebar{width: 250px;height: calc(100% - 140px); position: absolute; float: left; top:140px;left:0;bottom:0; border-right: 1px solid #d4d4d4;margin:-45px 5px 5px 5px;padding:5px;}{# 侧边栏 #}
+    .nav-pro-list{width: 250px; float: left;position: absolute;  }
+    .main{width: calc(100% - 270px);  float: left;  position: absolute;left: 250px;right:0;bottom:0;overflow-x: hidden;overflow-y: scroll; top: 90px;z-index: 1px}
+    .main .row{margin: 0 20px 0 -10px;}
+    .nav-tests{width: calc(100% - 320px);  float: left;  position: absolute;left: 250px;}
+    .zTreeDemoBackground .new_suit{display: inline}
+    .radius{border: 1px solid #ccc;border-radius: 5px}
+    div#rMenu{position:absolute;visibility:hidden;top:0;background-color:#fff;text-align:left;padding:2px 1px 2px 1px;border:1px solid #e6e6e6;border-radius: 10px;z-index: 9999;} {# 树  #}
+    div#rMenu ul li{padding:0;cursor:pointer;list-style:none outside none;background-color:#fff;min-width: 100px;margin: 0px 5px; font-size: 14px;color: #337ab7;}
+    .ztree * {padding:0; margin:0; font-size:14px; font-family: "Hiragino Sans GB","Microsoft YaHei","\5FAE\8F6F\96C5\9ED1",helvetica,sans-serif;}
+    .ztree li a {padding:1px 3px 0 0; margin:0; cursor:pointer; height:20px; color:#333; background-color: transparent; text-decoration:none; vertical-align:top; display: inline-block}
+    div#rMenu ul li#m_add_folder a：hover, div#rMenu ul li#m_add_case ：hover, div#rMenu ul li#m_rename :hover, div#rMenu ul li#m_del :hover {background-color: #fff}
+    div#rMenu ul li a:hover{text-decoration:none;}
+    div#rMenu ul{
+        display: block;
+        list-style-type: disc;
+        -webkit-margin-before: 1em;
+        -webkit-margin-after: 1em;
+        -webkit-margin-start: 0px;
+        -webkit-margin-end: 0px;
+        -webkit-padding-start: 0px;
+    }
+
+    textarea{resize:none}
+    a,button,input,textarea{outline:0}
+    .container{margin-left:60px}
+    table,th,td{text-align:center}
+    .tc,.ts,.ti,.tv,.tct,.tts,.tci{text-align:center}
+    .table{ table-layout:fixed;word-wrap:break-word;}
+    .hide{display:none!important}
+    footer{height:45px;line-height:45px;margin-top:-40px;font-size:16px;text-align:center;position:fixed;bottom:0;width:100%;background-color:#f4f4f4;border-top: 1px solid #d4d4d4}
+    footer .container{margin:0 auto}
+
+    .table-step .thead th, .table-add-step .thead th,.table-selected-interface .thead th,.table-interface .thead th, .table-variable .thead th,  .table-interface-choice .thead th, .table-test-suit .thead th{background-color:#ddd!important;border-bottom:1px solid #d5d5d5}
+    .table-step .col1,.table-step .col2,.table-step .col3,.table-step .col4,.table-step .col5{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;background-color:#fff !important}
+    .table-step .col1{width:5%}
+    .table-step .col2{width:22%}
+    .table-step .col3{width:10%}
+    .table-step .col4{width:10%}
+    .table-step .col5{width:21%}
+
+    .table-interface .col1,.table-interface .col2,.table-interface .col3,.table-interface .col4,.table-interface .col5{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;background-color:#fff !important}
+    .table-interface .col1{width:20%}
+    .table-interface .col2{width:10%}
+    .table-interface .col3{width:9%}
+    .table-interface .col4{width:14%}
+    .table-interface .col5{width:9%}
+    table#url_para {width:555px;margin-top: 8px}
+
+    .table-interface-choice .col1,.table-interface-choice .col2,.table-interface-choice .col3,.table-interface-choice .col4,.table-interface-choice .col5,.table-interface-choice .col6{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;background-color:#fff !important}
+    .table-interface-choice .col1{width:20%}
+    .table-interface-choice .col2{width:22%}
+    .table-interface-choice .col3{width:9%}
+    .table-interface-choice .col4{width:18%}
+    .table-interface-choice .col5{width:23%}
+    .table-interface-choice .col6{width:8%}
+
+    .table-variable .col1,.table-variable .col2,.table-variable .col3,.table-variable .col4,.table-variable .col5{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;background-color:#fff !important}
+    .table-variable .col1{width:25%}
+    .table-variable .col2{width:20%}
+    .table-variable .col3{width:15%}
+    .table-variable .col4{width:10%}
+    .table-variable .col5{width:20%}
+
+    .table-test-suit .col1,.table-test-suit .col2,.table-test-suit .col3,.table-test-suit .col4,.table-test-suit .col5,.table-test-suit .col6{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;background-color:#fff !important}
+    .table-test-suit .col1{width:10%}
+    .table-test-suit .col2{width:20%}
+    .table-test-suit .col3{width:15%}
+    .table-test-suit .col4{width:20%}
+    .table-test-suit .col5{width:25%}
+    .table-test-suit .col6{width:10%}
+
+    .table-add-step .col1,.table-add-step .col2, .table-add-step .col3,.table-add-step .col4,.table-add-step .col5,.table-add-step .col6{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;background-color:#fff !important}
+    .table-add-step .col1{width: 23%}
+    .table-add-step .col2{width: 12%}
+    .table-add-step .col3{width: 20%}
+    .table-add-step .col4{width: 25%}
+    .table-add-step .col5{width: 12%}
+    .table-add-step .col6{width: 8%}
+
+    .table-selected-interface .col1,.table-selected-interface .col2, .table-selected-interface .col3,.table-selected-interface .col4,.table-selected-interface .col5{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;background-color:#fff !important}
+    .table-selected-interface .col1{width: 25%}
+    .table-selected-interface .col2{width: 12%}
+    .table-selected-interface .col3{width: 25%}
+    .table-selected-interface .col4{width: 25%}
+    .table-selected-interface .col5{width: 13%}
+
+    .vr-type{min-width: 150px}
+    .create-interface-form .form-control{width: 400px}
+    .create-variable-form .form-control{width: 400px}
+    .lg-form .form-control{width:690px;}
+    .sel-form .form-control{width: 120px;}
+    .path-form .form-control{width: 250px;}
+    .data-display .form-control{width:100%}
+    .project-form .form-control{width:300px;}
+    .variable-details-form .variable_creator .control-label{min-width:120px;}
+    .form-control{width:180px;display:inline-block}
+    .create-interface-form .control-label{min-width:150px}
+    .details-interface-form .control-label{min-width:100px}
+    .request-message-form .control-label{min-width:150px}
+    .create-variable-form .control-label{min-width: 150px}
+    .variable-details-form .control-label{min-width: 100px}
+    .row .page-header{margin-top:20px;margin-left:15px}
+    .value-box{position:relative;width:200px;margin:0 auto;text-align: center;border: 1px solid #ddd;border-radius: 4px}
+    .value-box select{width:100%;line-height:26px;height:26px;vertical-align: middle;}
+    .value-box input{position:absolute;top:0;left:0;border: 1px}
+    .type-ch{width:100%;line-height:26px;height:26px;padding:1px;}
+    .debug button{min-width:70px;margin-top: -1px}
+    .debug a{min-width:70px}
+    .debug select{width:150px;height:27px}
+    .debug{margin: -10px 20px 10px 0 }
+    .inter-debug button,.inter-debug a{min-width:70px}
+    .inter-name{display: inline}
+    .inter-debug{display: inline; text-align: right; float: right; margin-right: -145px;margin-top: 3px}
+    #myTabContent input{border:1px solid #ddd;border-radius: 4px}
+
+    .modal-dialog {width: 1000px; margin: 100px auto}
+    .modal-dialog {position: absolute; top: 0; bottom: 0; left: 0;right: 0;}
+    .modal-content {position: absolute; top: 0; bottom: 0; width: 100%;  }
+    #my-modal .modal-body{overflow-y: scroll;overflow-x: hidden; position: absolute; top: 55px; bottom: 65px; width: 100%;padding: 15px }
+    #modal-interface .modal-body{overflow-y: scroll; position: absolute; top: 55px; bottom: 65px; width: 100%; }
+    #testCase_log_box .modal-body, #it_log_box .modal-body{ overflow: scroll; position: absolute; top: 55px; bottom: 1px; width: 100%; margin-top: 10px}
+    #history_testCaseLog_box .modal-body, #it_history_log_box .modal-body{position: absolute; top: 55px; bottom: 1px; width: 100%; }
+    #history_testCaseLog_box .modal-body ul, #it_history_log_box .modal-body ul {padding:0}
+    div#it_catalog, div#cs_catalog{ height:100%;border-right: 1px solid #eee;}
+    div#it_logs, div#cs_log{overflow: scroll;height: 100%;margin-left: 15px;margin-right: -15px;margin-top: -5px}
+    .modal-header .close {margin-right: 15px;}
+    .modal-footer { position: absolute; width: 100%; bottom: 0; }
+    #project-modal .modal-dialog{width: 500px;height:400px;}
+    #m_del_modal .modal-dialog{width: 360px;height:200px;}
+    #m_del_modal .modal-header{padding: 8px}
+    #m_del_modal .modal-body{padding: 10px;line-height: 35px}
+    #m_del_modal .modal-footer{padding: 2px}
+    #m_re_modal .modal-dialog{width: 360px;height:200px;}
+    #m_re_modal .modal-header{padding: 8px}
+    #m_re_modal .modal-body{padding: 10px;line-height: 35px}
+    #m_re_modal .modal-footer{padding: 2px}
+    .case-log {list-style-type:none;}
+    .bkgd{border:1px solid #eee;
+        -webkit-border-radius: 4px;
+        -moz-border-radius: 4px;
+        border-radius: 4px;background-color: #ccc}
+
+    .overview label{width: 70px;}
+    .overview input{width:200px;}
+
+</style>

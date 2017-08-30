@@ -1,3 +1,19 @@
 username = 'yx237numen5@163.com'
 password = 'admin123'
 host = 'https://b.yixin.im'
+
+# 106.2.124.114 my.qiye.yixin.im
+# 106.2.124.114  qiye.yixin.im
+# 106.2.124.114  super.qiye.yixin.im
+# 10.246.18.141 oa.qiye.yixin.im
+# 106.2.124.114  debug.qiye.yixin.im
+# 106.2.124.114 open.qiye.yixin.im
+# 106.2.44.116	publish.yixin.im
+# 106.2.124.114 inotice.qiye.yixin.im
+# 106.2.124.114  conference.qiye.yixin.im
+# 106.2.124.114  web.qiye.yixin.im
+# 106.2.125.50   kolibriqrcode.yixin.im
+# 106.2.124.114  kolibri.yixin.im
+# 106.2.124.114 web.qiye.yixin.im
+# 106.2.124.114 kolibriqrcode.yixin.im
+# 106.2.124.114	circle.qiye.yixin.im

@@ -1,0 +1,19 @@
+{% extends "_subnav.html" %}
+
+{% block project-list %}
+    <select class="form-control" name="selected_pro" id="selected_pro"
+            onchange="window.location.href = this.value">
+        {% for project in project_table %}
+            {% if selected_project.id == project.id %}
+                <option name="{{ selected_project.id }}"
+                        value="{% url "new_suite" selected_project.id %}"
+                        selected="selected">{{ selected_project.name }}</option>
+            {% else %}
+                <option name="{{ project.id }}"
+                        value="{% url "new_suite" project.id %}">{{ project.name }}</option>
+            {% endif %}
+        {% endfor %}
+    </select>
+
+{% endblock %}
+

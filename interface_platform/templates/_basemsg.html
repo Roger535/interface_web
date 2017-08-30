@@ -1,0 +1,243 @@
+<div class="row">
+    <div>
+        <label style="font-size:20px;">当前位置：</label>
+        <input style="font-size:18px;border:0;width: 600px; height: 40px;" type="text" name="current_position"
+               value="{{ path }}" size="40" readonly="readonly"/>
+    </div>
+    <div class="form-group text-right debug">
+        <label>负责人:</label>
+        <select id="tc_responsible" name="tc_responsible">
+            {% for account in user_table %}
+                {% if tc.responsible == account %}
+                    <option selected="selected">{{ account.user.username }}</option>
+                {% else %}
+                    <option>{{ account.user.username }}</option>
+                {% endif %}
+            {% endfor %}
+        </select>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <label>创建人:</label>
+        <select id="tc_creator" name="tc_creator">
+            {% for account in user_table %}
+                {% if tc.author == account %}
+                    <option selected="selected">{{ account.user.username }}</option>
+                {% else %}
+                    <option>{{ account.user.username }}</option>
+                {% endif %}
+            {% endfor %}
+        </select>
+        &nbsp;&nbsp;
+        <label>执行状态:</label>
+        <select id="tc_status" name="tc_status">
+            {% for item in statuses %}
+                {% if item.0 == tc.status %}
+                    <option selected="selected">{{ item.1 }}</option>
+                {% else %}
+                    <option>{{ item.1 }}</option>
+                {% endif %}
+            {% endfor %}
+        </select>
+        <label style="height:30px;"></label>&nbsp;&nbsp;&nbsp;
+        <button type="button" class="btn btn-primary btn-sm" id="case_debug">调试</button>
+        <button type="button" class="btn btn-primary btn-sm add-step" id="history_log">历史日志</button>
+    </div>
+    <div class="row-fluid">
+        <div class="form-group table-responsive table-step">
+            <table class="table table-bordered" id="tc_step">
+                <thead class="thead">
+                <tr>
+                    <th class="ts col1">&nbsp;</th>
+                    <th class="ts col2">步骤名称</th>
+                    <th class="ts col3">请求方式</th>
+                    <th class="ts col3">请求参数</th>
+                    <th class="ts col4">期望值</th>
+                    <th class="ts col4">状态</th>
+                    <th class="ts col5">最后修改时间</th>
+                    <th class="ts col5">操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for step in all_steps %}
+                    <tr>
+                        <td class="ts col1" title="{{ step.index }}">{{ step.index }}</td>
+                        <td class="ts col2" title="{{ step.alias }}">{{ step.alias }}</td>
+                        <td class="ts col3" title="{{ step.request_type }}">{{ step.request_type }}</td>
+                        <td class="ts col3" title="{{ step.request_para }}">{{ step.request_para }}</td>
+                        <td class="ts col4" title="{{ step.response_para }}">{{ step.response_para }}</td>
+                        <td class="ts col4" title="">
+                            {% if step.status == "Pass" %}
+                                通过
+                            {% elif step.status == "Fail" %}
+                                失败
+                            {% elif step.status == "Unexecuted" %}
+                                未执行
+                            {% endif %}
+                        </td>
+                        <td class="ts col5" title="{{ step.timestamp|date:"Y-m-d H:i:s" }}">{{ step.timestamp|date:"Y-m-d H:i:s" }}</td>
+                        <td class="ts col5">
+                            <span class="add" aria-hidden="true">
+                                <i class="glyphicon glyphicon-plus add-step"  type="icon" name="{{ step.index }}" title="插入" value="插入"></i>
+                            </span>
+                            <span class="up" aria-hidden="true">
+                                <i class="glyphicon glyphicon-arrow-up" type="icon" name="{{ step.index }}" title="上移" value="上移"></i>
+                            </span>
+                            <span class="down" aria-hidden="true">
+                                <i class="glyphicon glyphicon-arrow-down" type="icon" name="{{ step.index }}" title="下移" value="下移"></i>
+                            </span>
+                            <span class="remove" aria-hidden="true">
+                                <i class="glyphicon glyphicon-trash" type="icon" name="{{ step.index }}" title="删除" value="删除"></i>
+                            </span>
+
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="form-group" align="left">
+            <div class="col-sm-12" >
+                <button class="btn btn-primary btn-block add-step" role="button">添加步骤</button>
+            </div>
+        </div>
+        <div class="modal" id="my-modal" tabindex="-1" data-backdrop="static" data-keyboard="false">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h3 class="modal-title" id="myModalLabel" align="center">
+                            选择接口窗口
+                        </h3>
+                    </div>
+                    <div class="modal-body">
+                        <form class="form-horizontal" role="form" action="{% url "add_step" project_id tc.id %}"
+                              method="post" onsubmit="return radioBtnSelectConfirm()" style="padding:0px 15px; ">
+                            {% csrf_token %}
+                            <div class="form-group text-left">
+                                <input type="search" name="interface_search" value="搜索..."
+                                       style="width: 150px;height: 30px;"/>&nbsp;&nbsp;
+                                <a class="btn btn-primary btn-sm" href="{% url 'create_interface' project_id %}"
+                                   role="button">新建接口</a> &nbsp;
+                            </div>
+                            <div class="form-group">
+                                <div class="table-responsive table-add-step">
+                                    <table class="table table-bordered table-add-step" id="choose_interface">
+                                        <thead class="thead">
+                                        <tr>
+                                            <th class="col1">接口名称</th>
+                                            <th class="col2">请求方式</th>
+                                            <th class="col3">请求参数</th>
+                                            <th class="col4">期望值</th>
+                                            <th class="col5">状态</th>
+                                            <th class="col6">操作</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for it in its %}
+                                            <tr>
+                                                <td class="col1" title="{{ it.name }}">{{ it.name }}</td>
+                                                <td class="col2" title="{{ it.request_type }}">{{ it.request_type }}</td>
+                                                <td class="col3" title="{{ it.request_para }}">{{ it.request_para }}</td>
+                                                <td class="col4" title="{{ it.response_para }}">{{ it.response_para }}</td>
+                                                <td class="col5" title="">
+                                                    {% if it.status == "Pass" %}
+                                                        通过
+                                                    {% elif it.status == "Fail" %}
+                                                        失败
+                                                    {% elif it.status == "Unexecuted" %}
+                                                        未执行
+                                                    {% endif %}
+                                                </td>
+                                                <td class="col6"><input type="radio" name="selected_it" value="{{ it.id }}" required/></td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="form-group" id='row'>
+                                <h4>已选择接口</h4>
+                                <table class="table table-bordered table-selected-interface">
+                                    <thead class="thead">
+                                    <tr id="chose_table_head">
+                                        <th class="col1">接口名称</th>
+                                        <th class="col2">请求方式</th>
+                                        <th class="col3">请求参数</th>
+                                        <th class="col4">期望值</th>
+                                        <th class="col5">状态</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr id="chose_ts">
+                                        <td class="col1" id="ts_name"></td>
+                                        <td class="col2" id="ts_req_typ"></td>
+                                        <td class="col3" id="ts_req_para"></td>
+                                        <td class="col4" id="ts_exp_val"></td>
+                                        <td class="col5" id="ts_statue"></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="form-group">
+                                <label for="step_name" class="col-sm-2 control-label"
+                                       style="margin-left: -75px;">步骤名称:</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="step_alias" name="step_alias"
+                                           placeholder="为空时默认接口名称"/>
+                                </div>
+                            </div>
+                            <div class="form-group" align="left">
+                                <div class="col-sm-offset-2 col-sm-10">
+                                    <button type="submit" class="btn btn-primary" value="submit_add"
+                                            style="margin-left: -160px">确定
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal" id="testCase_log_box" tabindex="-1" data-backdrop="static" data-keyboard="false">
+            <div class="modal-dialog">
+                <div class="modal-content" style="">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h3 class="modal-title" id="myModalLabel" align="center">
+                            用例执行日志
+                        </h3>
+                    </div>
+                    <div class="modal-body">
+{#                        {% for line in case_log %}#}
+{#                            <div class="font_color" style="color: #000;font-size: 16px;">{{ line }}</div>#}
+{#                        {% endfor %}#}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal" id="history_testCaseLog_box" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content" style="">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h3 class="modal-title" id="myModalLabel" align="center">
+                            用例历史日志
+                        </h3>
+                    </div>
+                    <div class="modal-body">
+                        <div class="col-sm-3" id="cs_catalog">
+                            <ul class="cs_catalog">
+
+                            </ul>
+                        </div>
+                        <div class="col-sm-9" id="cs_log">
+                            <p>用例历史日志</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $.cookie("tc_id", {{ tc.id }}, {path: '/'});
+</script>

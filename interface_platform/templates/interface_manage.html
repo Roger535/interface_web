@@ -1,0 +1,62 @@
+{% extends "mybase.html" %}
+
+{% block main %}
+    <div class="row">
+        <div class="text-left">
+            <a class="btn btn-primary btn-sm" role="button" href="{% url "create_interface" selected_project.id%}">新建接口</a> &nbsp;
+            <input type="search" class="form-control" name="interface_search" placeholder="搜索..."/>
+        </div>
+    </div>
+    <p></p>
+
+    <div class="row">
+        <div class="table-responsive">
+            <table class="table table-bordered table-interface" id="interface_manage">
+                <thead class="thead">
+                <tr>
+                    <th class="ti col1">接口名称</th>
+                    <th class="ti col1">URL</th>
+                    <th class="ti col2">请求方式</th>
+                    <th class="ti col3">负责人</th>
+                    <th class="ti col3">状态</th>
+                    <th class="ti col3">创建人</th>
+                    <th class="ti col4">创建时间</th>
+                    <th class="ti col5">操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% if its_table|length %}
+                    {% for it in its_table %}
+                        <tr class="success">
+                            <td class="ti col1" title="{{ it.name }}">
+                                <a href="{% url 'interface_detail' selected_project.id  it.id %}">{{ it.name }}</a>
+                            </td>
+                            <td class="ti col1" title="{{ it.path }}">{{ it.path }}</td>
+                            <td class="ti col2" title="{{ it.request_type }}">{{ it.request_type }}</td>
+                            <td class="ti col3" title="{{ it.responsible }}">{{ it.responsible }}</td>
+                            <td class="ti col3" title="">
+                                {% if it.status == "Pass" %}
+                                    通过
+                                {% elif it.status == "Fail" %}
+                                    失败
+                                {% elif it.status == "Unexecuted" %}
+                                    未执行
+                                {% endif %}
+                            </td>
+                            <td class="ti col3" title="{{ it.creator }}">{{ it.creator }}</td>
+                            <td class="ti col4" title="{{ it.timestamp|date:"Y-m-d H:i:s" }}">{{ it.timestamp|date:"Y-m-d H:i:s" }}</td>
+                            <td class="ti col5" title=""><i class="glyphicon glyphicon-trash del" type="icon" title="删除" name="del_it"
+                                                   value="{{ it.id }}"></i></td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="8" class="tc">暂时还没有任何接口</td>
+                    </tr>
+                {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+{% endblock %}

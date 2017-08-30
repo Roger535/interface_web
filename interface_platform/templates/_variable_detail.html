@@ -1,0 +1,182 @@
+<div class="row">
+    <div class="text-left" style="border-bottom:1px solid #eee;margin-bottom: 15px;">
+        <label style="font-size:22px;">变量详情</label>
+    </div>
+    <div class="row placeholders">
+        <div class="form-horizontal variable-details-form" role="form" >
+{#            {% csrf_token %}#}
+            <div class="form-group">
+                <div class="col-md-4 column">
+                    <div class="form-group">
+                        <label for="variable_name" class="col-sm-1 control-label">名称:</label>
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control v-save" id="variable_name"
+                                   name="variable_name" value="{{ var.name }}" required/>
+                        </div>
+                    </div>
+                    <div class="form-group lg-form">
+                        <label for="variable_value" class="col-sm-1 control-label">值:</label>
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control lg-form val v-save" id="variable_value"
+                                   name="variable_value" value="{{ var.value }}" required/>
+                        </div>
+                    </div>
+                    <div class="form-group lg-form">
+                        <label for="variable_desc" class="col-sm-1 control-label">描述:</label>
+                        <div class="col-sm-4">
+                            <textarea class="form-control lg-form v-save" id="variable_desc"
+                                      name="variable_desc">{{ var.desc }}</textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 column">
+                    <label for="variable_type" class="col-sm-2 control-label">类别:</label>
+                    <div class="col-sm-4">
+                        <select class="col-sm-10 form-control v-save" id="variable_type" name="variable_type">
+                            {% for var_type in var_types %}
+                                {% if var_type == var.type %}
+                                    <option selected="selected">{{ var.type }}</option>
+                                {% else %}
+                                    <option>{{ var_type }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-md-4 column variable_creator">
+                    <label for="variable_responsible" class="col-sm-4 control-label">最后更改者:</label>
+                    <div class="col-sm-4">
+                        <input type="text" class="form-control" id="variable_responsible"
+                               name="variable_responsible" value="{{ var.responsible }}" readonly="readonly"/>
+                    </div>
+                </div>
+            </div>
+{#            <div class="form-group col-md-9">#}
+{#                <div class="col-sm-offset-1 col-sm-9" align="left">#}
+{#                    <button type="submit" class="btn btn-primary btn-sm">保存</button>#}
+{#                </div>#}
+{#            </div>#}
+        </div>
+    </div>
+
+    <div class="modal" id="modal-interface" tabindex="-1" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×
+                    </button>
+                    <h3 class="modal-title" id="myModalLabel" align="center">
+                        选择接口窗口
+                    </h3>
+                </div>
+                <div class="modal-body">
+                    {% csrf_token %}
+                    <div class="table-responsive">
+                        <div class="form-group text-left">
+                            <input type="search" name="interface_search" value="搜索..."
+                                   style="width: 150px;height: 30px;"/>&nbsp;&nbsp;
+                            <a class="btn btn-primary btn-sm"
+                               href="{% url 'create_interface' project.id %}" role="button">新建接口</a>
+                            &nbsp;
+                        </div>
+                        <table class="table table-bordered table-interface-choice" id="it_choice">
+                            <thead class="thead">
+                            <tr>
+                                <th class="tic col1">名称</th>
+                                <th class="tic col2">URL</th>
+                                <th class="tic col3">请求方式</th>
+                                <th class="tic col4">请求参数</th>
+                                <th class="tic col5">期望值</th>
+                                <th class="tic col6">操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for it in its %}
+                                <tr>
+                                    <td class="tic col1" title="{{ it.name }}">{{ it.name }}</td>
+                                    <td class="tic col2" title="{{ it.path }}">{{ it.path }}</td>
+                                    <td class="tic col3" title="{{ it.request_type }}">{{ it.request_type }}</td>
+                                    <td class="tic col4" title="{{ it.request_para }}">{{ it.request_para }}</td>
+                                    <td class="tic col5" title="{{ it.response_para }}">{{ it.response_para }}</td>
+                                    <td style="display:none;" title="{{ it.response_head }}">{{ it.response_head }}</td>
+                                    <td class="tic col6" title=""><input type="radio" name="test" value="{{ it.id }}"
+                                               onClick="getInterface()"/></td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="chose_table">
+                        <h4>已选择接口</h4>
+                        <table class="table table-bordered table-interface-choice">
+                            <thead class="thead">
+                            <tr id="chose_table_head">
+                                <th class="tic col1">名称</th>
+                                <th class="tic col2">URL</th>
+                                <th class="tic col3">请求方式</th>
+                                <th class="tic col4">请求参数</th>
+                                <th class="tic col5">期望值</th>
+                                <th class="tic col6">操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr id="chose_tr">
+                                <td class="tic col1" id="tr_name"></td>
+                                <td class="tic col2"id="tr_url"></td>
+                                <td class="tic col3" id="tr_req_typ"></td>
+                                <td class="tic col4" id="tr_req_para"></td>
+                                <td class="tic col5" id="tr_exp_val"></td>
+                                <td class="tic col6">
+                                    <button class="btn btn-primary btn-xs" id="interface_run">运行</button>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="form-group">
+                        <h4>响应头</h4>
+                        <table class="table table-bordered table-step" id="it_response_head">
+                            <thead class="thead">
+                            <tr>
+                                <th>名称</th>
+                                <th>值</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody id="it_response_head_tbody">
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="form-group">
+                        <h4>响应数据</h4>
+                        <table class="table table-bordered table-step" id="it_response_body">
+                            <thead class="thead">
+                            <tr>
+                                <th>名称</th>
+                                <th>值</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody id="it_response_body_tbody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="form-group" align="left">
+                        <button type="button" name="update_var" class="btn btn-primary btn-sm it-return" data-dismiss="modal">确定
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# JQuery引用文件在底部所以这里使用不了，需要特别引用 #}
+<script type="text/javascript" src='/site_media/static/js/jquery-3.1.1.min.js'></script>
+<script type="text/javascript" src='/site_media/static/js/jquery.cookie.js'></script>
+<script type="text/javascript">
+    $.cookie("var_id", {{ var.id }}, {path: '/'});
+</script>

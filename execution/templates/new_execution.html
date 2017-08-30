@@ -1,0 +1,62 @@
+{% extends "angular_base.html" %}
+
+{% block angular-app %}
+    {% include "_new_exec_subnav.html" %}
+    <div ng-controller="NewSuite">
+        <div class="row wrapper" style="overflow:hidden">
+            <div class="sidebar" style="height: calc(100% - 195px);">
+                {% block nav-sidebar %}
+                    <div id="execution_name"
+                         style="margin-bottom: 5px; padding-bottom: 5px; border-bottom: 1px dotted #777;">
+                        <label class="execution_name">*名称：</label>
+                        <input class="form-control" name="execution_name" placeholder="请输入执行集名字"/>
+                    </div>
+                    {% include "_navigation_side.html" %}
+                {% endblock %}
+            </div>
+            <div class="main"
+                 style="border-left:1px solid #eee;margin:5px 20px 5px 20px;padding:1px 10px 5px 0px; top: 90px;height: calc(100% - 195px);">
+                {% block main %}
+                    <div class="form-group table-responsive table-test-suit">
+                        <table class="table table-bordered" id="table-test-suit">
+                            <thead class="thead">
+                            <tr>
+                                <th class="tts col1">&nbsp;</th>
+                                <th class="tts col2">步骤名称</th>
+                                <th class="tts col3">请求方式</th>
+                                <th class="tts col4">请求参数</th>
+                                <th class="tts col5">期望值</th>
+                                <th class="tts col6">状态</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {#                            {% for step in all_steps %}#}
+                            <td class="tts col1"></td>
+                            <td class="tts col1"></td>
+                            <td class="tts col1"></td>
+                            <td class="tts col1"></td>
+                            <td class="tts col1"></td>
+                            <td class="tts col1"></td>
+                            {#                            {% endfor %}#}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endblock %}
+            </div>
+            <div class="clear" style="clear:both"></div>
+        </div>
+        <div class="nav_bottom"
+             style="border-top:1px solid #d4d4d4;text-align:center;padding-top: 5px;height:55px;width: 100%; bottom: 45px;position: fixed;">
+            {% block nav_save %}
+                <button type="button" class="btn btn-default btn-lg  pull-right" id="execution_q"
+                        style="margin-right: 50px">取消
+                </button>
+                <button type="button" class="btn btn-primary btn-lg  pull-right" id="execution_s"
+                        style="margin-right: 30px" ng-click="save_suite()">保存
+                </button>
+            {% endblock %}
+        </div>
+    </div>
+
+
+{% endblock %}

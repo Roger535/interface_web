@@ -45,16 +45,17 @@ exports = module.exports = {
     },
     
     mystyles: {
-        source: staticSource + 'css/**.*',
+        source: staticSource + 'css/**/*',
         dist: staticDist + 'css/',
     },
     
     scripts: {
         main: staticSource + 'js/site.js',
         source: [
-            staticSource + 'js/**/*'
+            staticSource + 'js/**/*',
         ],
-        dist: staticBuild + 'js/'
+        dist: staticBuild + 'js/',
+        mydist: staticDist + 'js/',
     },
     images: {
         sources: [

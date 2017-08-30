@@ -1,0 +1,516 @@
+<script type="text/javascript" src='/site_media/static/js/jquery-3.1.1.min.js'></script>
+<script type="text/javascript" src='/site_media/static/js/bootstrap.min.js'></script>
+<script type="text/javascript" src='/site_media/static/js/site-3be89871c7.js'></script>
+<script type="text/javascript" src='/site_media/static/js/jquery.ztree.core.js'></script>
+<script type="text/javascript" src='/site_media/static/js/jquery.ztree.excheck.js'></script>
+<script type="text/javascript" src='/site_media/static/js/jquery.ztree.exhide.js'></script>
+<script type="text/javascript" src='/site_media/static/js/jquery.ztree.exedit.js'></script>
+<script type="text/javascript" src='/site_media/static/js/jquery.cookie.js'></script>
+<script type="text/javascript" src='/site_media/static/js/jquery.validate.min.js'></script>
+<script type="text/javascript" src='/site_media/static/js/messages_zh.min.js'></script>
+<script type="text/javascript" src='/site_media/static/js/echarts.js'></script>
+<script type="text/javascript" src='/site_media/static/js/eat/execute_func.js'></script>
+<script type="text/javascript" src='/site_media/static/js/eat/ajax_urls.js'></script>
+<script type="text/javascript" src='/site_media/static/js/eat/basemsg_func.js'></script>
+<script type="text/javascript" src='/site_media/static/js/eat/interface_func.js'></script>
+<script type="text/javascript" src='/site_media/static/js/eat/resource_func.js'></script>
+<script type="text/javascript" src="/site_media/static/js/underscore.js"></script>
+<script type="text/javascript" src="/site_media/static/js/angular.js"></script>
+<script type="text/javascript" src="/site_media/static/js/angular-resource.js"></script>
+<script type="text/javascript" src="/site_media/static/js/eat/execution_angular.js"></script>
+<script type="text/javascript">
+    window.confirm = function(name){
+    var iframe = document.createElement("IFRAME");
+    iframe.style.display="none";
+    iframe.setAttribute("src", 'data:text/plain,');
+    document.documentElement.appendChild(iframe);
+    var result = window.frames[0].window.confirm(name);
+    iframe.parentNode.removeChild(iframe);
+    return result;
+    }
+    // 设置全局变量
+    var mytree, rMenu;
+    // 目录树设置
+    var setting = {
+        callback: {
+            beforeRename: beforeRename,
+            onClick: onClick,
+            onRightClick: onRightClick,
+            onRename: onRename,
+        },
+        check: {
+            enable: true,
+            nocheckInherit: true,
+            chkboxType: {"Y": "ps", "N": "ps"}
+        },
+        data: {
+            simpleData: {
+                enable: true,
+            }
+        }
+    };
+
+    $(document).ready(function () {
+        $("form.project-form").validate();
+        var url = window.location.href;
+        var tree_url = "{% url 'ajax_tree' %}";
+        // 树异步加载，待发送数据
+        var send_data = {};
+        // 测试执行页面的目录树和测试用例页面的目录树加载方式不同
+        if (url.match(/.*\/execution\/suites\/\d+\/reports\/$/)){
+            var project_id = $.cookie("selected_project");
+            tree_url = "{% url 'report_tree' %}";
+            var array = window.location.pathname.split("/");
+            send_data["suite_id"] = array[5]
+        }
+        // 一次性加载树
+        $.ajax({
+            url: tree_url,
+            type: "GET",
+            dataType: "json",
+            data: send_data,
+            success: function (data) {
+                if (data != "fail") {
+                    // 同步加载目录树
+                    $.fn.zTree.init($("#treeDemo"), setting, data);
+                    mytree = $.fn.zTree.getZTreeObj("treeDemo");
+                    // 新建测试执行集时会显示CheckBox
+                    if (url.match(/.*\/execution\/suites\/$/)) {}
+                    else {
+                        var nodes = mytree.transformToArray(mytree.getNodes()); //设置节点隐藏checkbox
+                        if (nodes) {
+                            for (var i = 0; i < nodes.length; i++) {
+                                nodes[i].nocheck = true;
+                                mytree.updateNode(nodes[i]);
+                            }
+                        }
+                    }
+                    KeepLastTreeState(mytree);
+                    rMenu = $("#rMenu");
+                }
+            }
+        });
+
+        $("#m_add_folder").mouseenter(function () {
+            document.getElementById("m_add_folder").style.background = "#ccc";
+            $("#m_add_folder").addClass("radius");
+        });
+        $("#m_add_folder").mouseleave(function () {
+            document.getElementById("m_add_folder").style.background = "#fff";
+            $("#m_add_folder").removeClass("radius");
+        });
+        $("#m_add_case").mouseenter(function () {
+            document.getElementById("m_add_case").style.background = "#ccc";
+            $("#m_add_case").addClass("radius");
+        });
+        $("#m_add_case").mouseleave(function () {
+            document.getElementById("m_add_case").style.background = "#fff";
+            $("#m_add_case").removeClass("radius");
+        });
+        $("#m_rename").mouseenter(function () {
+            document.getElementById("m_rename").style.background = "#ccc";
+            $("#m_rename").addClass("radius");
+        });
+        $("#m_rename").mouseleave(function () {
+            document.getElementById("m_rename").style.background = "#fff";
+            $("#m_rename").removeClass("radius");
+        });
+        $("#m_del").mouseenter(function () {
+            document.getElementById("m_del").style.background = "#ccc";
+            $("#m_del").addClass("radius");
+        });
+        $("#m_del").mouseleave(function () {
+            document.getElementById("m_del").style.background = "#fff";
+            $("#m_del").removeClass("radius");
+        });
+    });
+
+    $(document).ready(function(){
+        $("#inter-res").mouseenter(function () { ////导航栏效果
+            document.getElementById("select-menu").style.display = "block";
+        });
+        $("#inter-res").mouseleave(function () {
+            document.getElementById("select-menu").style.display = "none";
+        });
+        $('.nav-test li a').each(function(){
+            if($($(this))[0].href==String(window.location))
+                $(this).parent().addClass('crt');
+        });
+        $('#inter-res a').each(function(){
+            if($($(this))[0].href==String(window.location))
+                $('#inter-res').addClass('act');
+        });
+        $('#projectConfig').on('click', function () {
+            $(".dropdown-toggle").dropdown('toggle');
+        });
+    });
+
+    function innerValue(header_type, header_value) {
+        var lastTr = $("table#request_head tbody tr:last");
+        //获取最后一行第一个td的input元素
+        var input_name = lastTr.find("td").eq(0).find("input");
+        //获取最后一行第二个td的input元素
+        var input_value = lastTr.find("td").eq(1).find("input");
+        var input_desc = lastTr.find("td").eq(2).find("input");
+        input_name.val(header_type);
+        input_value.val(header_value);
+        input_desc.val("禁止更改");
+        var custom_head = {
+            "id": "custom", "name": header_type, "value": header_value, "valueType": header_value,
+            "desc": "禁止更改"
+        };
+        $.ajax({
+            url: update_interface_req_head,
+            type: "POST",
+            dataType: "json",
+            data: custom_head,
+            success: function (data) {
+                console.log(data);
+                if (data["msg"] == "custom_head") {
+                    lastTr.attr("id", data["head_id"]);
+                }
+            }
+        });
+
+    }
+
+    //获取定制头信息
+    function setHeader(type) {
+        var lastTr = $("table#request_head tbody tr:last");
+        //获取最后一行第一个td的input元素的值
+        var header_key = lastTr.find("td").eq(0).find("input").val();
+        //获取最后一行第二个td的input元素的值
+        var header_value = lastTr.find("td").eq(1).find("input").val();
+        if (header_key == "" && header_value == "") {
+            if (type == "web") {
+                innerValue("Web定制头部", "101");
+            }
+            else {
+                innerValue("Mobile定制头部", "102");
+            }
+        }
+        else {
+            var reqHeadTr = '<tr class="auto-save" id="custom" name="reqHeadTr" readonly="readonly">' +
+                    $("table#request_head tbody").find("tr:last").html() + '</tr>';
+
+            $("table#request_head tbody").append(reqHeadTr);
+            if (type == "web") {
+                innerValue("Web定制头部", "101");
+            }
+            else {
+                innerValue("Mobile定制头部", "102");
+            }
+        }
+    }
+
+
+    function add_reqHeadTr() {
+        var reqHeadTr = '<tr class="auto-save" id="content1" name="reqHeadTr">' +
+                $("table#request_head tbody").find("tr:last").html() + '</tr>';
+
+        $("table#request_head tbody").append(reqHeadTr);
+    }
+    function add_reqBodyTr() {
+        var reqBodyTr = '<tr class="auto-save" id="reqBodyTr" name="reqBodyTr">' +
+                $("table#request_body tbody").find("tr:last").html() + '</tr>';
+
+        $("table#request_body tbody").append(reqBodyTr);
+    }
+    function add_urlTr() {
+        var urlTr = '<tr class="auto-save" id="urlTr" name="urlTr">' +
+                $("table#url_para tbody").find("tr:last").html() + '</tr>';
+
+        $("table#url_para tbody").append(urlTr);
+    }
+    function add_repHeadTr() {
+        var repHeadTr = '<tr class="auto-save" id="repHeadTr" name="repHeadTr">' +
+                $("table#response_head tbody").find("tr:last").html() + '</tr>';
+
+        $("table#response_head tbody").append(repHeadTr);
+    }
+    function add_repBodyTr() {
+        var repBodyTr = '<tr class="auto-save" id="repBodyTr" name="repBodyTr">' +
+                $("table#response_body tbody").find("tr:last").html() + '</tr>';
+
+        $("table#response_body tbody").append(repBodyTr);
+    }
+
+    function aCheck1() {
+        document.getElementById("span1").style.display = "block";
+        document.getElementById("span2").style.display = "none";
+    }
+    function bCheck2() {
+        document.getElementById("span1").style.display = "none";
+        document.getElementById("span2").style.display = "block";
+    }
+    function aCheck3() {
+        document.getElementById("span3").style.display = "block";
+        document.getElementById("span4").style.display = "none";
+    }
+    function bCheck4() {
+        document.getElementById("span3").style.display = "none";
+        document.getElementById("span4").style.display = "block";
+    }
+    function add_url_para() {
+        document.getElementById("span").style.display = "block";
+    }
+    function changeF() {
+        document.getElementById('test_data_input').value =
+                document.getElementById('test_data_choice').options[document.getElementById('test_data_choice').selectedIndex].val();
+        alert(document.getElementById('test_data_choice').options[document.getElementById('test_data_choice').selectedIndex].val())
+    }
+    function changeF2() {
+        document.getElementById('test_data_input2').value =
+                document.getElementById('test_data_choice2').options[document.getElementById('test_data_choice2').selectedIndex].val();
+        alert(document.getElementById('test_data_choice2').options[document.getElementById('test_data_choice2').selectedIndex].val())
+    }
+
+    function onClick(event, treeId, treeNode) {
+        var selected_project = $.cookie("selected_project");
+        var case_json = {id: treeNode.mId};
+        // current_url = "/projects/1/tree/click_node/1"
+        var current_url = "/projects/" + selected_project + "{% url 'click_node' %}" + treeNode.mId + "/";
+        // 修改current_url成REST风格地址
+        current_url = current_url.replace("tree/click_node", "testcases");
+        $.cookie("clicked_node", treeNode.mId, {path: '/'});
+        console.log("onClick:" + $.cookie("clicked_node"));
+        $.ajax({
+            url: "{% url 'click_node' %}",
+            type: "GET",
+            data: case_json,
+            success: function (data) {
+                if (data == "folder") {
+                    $("div.main").html("");
+                }
+                else {
+                    $("div.main").html(data);
+                    window.history.pushState({content: data}, "", current_url);
+                }
+            }
+        });
+    }
+
+    $(function () {
+        var elem_lis = $("li.test_executions, li.test_cases");
+        $.each(elem_lis, function (i) {
+            $(elem_lis[i]).click(function (e) {
+                $(".crt").removeClass('crt');
+                $(this).addClass('crt');
+            });
+        });
+    });
+
+    function onSuccess(event, treeId, treeNode, msg) {
+        console.log("异步加载完成");
+        KeepLastTreeState(mytree);
+    }
+    function onRightClick(event, treeId, treeNode) {
+        if (!treeNode && event.target.tagName.toLowerCase() != "button" && $(event.target).parents("a").length == 0) {
+            mytree.cancelSelectedNode();
+            {#            showRMenu("root", event.clientX, event.clientY - 150);#}
+        } else if (treeNode && !treeNode.noR) {
+            mytree.selectNode(treeNode);
+            showRMenu("node", event.clientX, event.clientY - 120);
+        }
+    }
+    function showRMenu(type, x, y) {
+        $("#rMenu ul").show();
+        if (type == "root") {
+            $("#m_del").hide();
+            $("#m_rename").hide();
+            $("#m_add_case").hide();
+            $("#m_add_folder").show();
+        } else {
+            $("#m_del").show();
+            $("#m_add_folder").show();
+            $("#m_add_case").show();
+            $("#m_rename").show();
+        }
+        rMenu.css({"top": y + "px", "left": x + "px", "visibility": "visible"});
+
+        $("body").bind("mousedown", onBodyMouseDown);
+    }
+    function hideRMenu() {
+        if (rMenu) rMenu.css({"visibility": "hidden"});
+        $("body").unbind("mousedown", onBodyMouseDown);
+    }
+    function onBodyMouseDown(event) {
+        if (!(event.target.id == "rMenu" || $(event.target).parents("#rMenu").length > 0)) {
+            rMenu.css({"visibility": "hidden"});
+        }
+    }
+    function beforeRename(treeId, treeNode, newName) {
+        if (newName.length == 0) {
+            $("#m_re_modal").modal("toggle");
+            return false;
+        }
+        return true;
+    }
+    function editName() {
+        hideRMenu();
+        mytree = $.fn.zTree.getZTreeObj("treeDemo");
+        var selected_node = mytree.getSelectedNodes()[0];
+        mytree.editName(selected_node);
+    }
+    function onRename(treeId, treeNode, newName) {
+        mytree = $.fn.zTree.getZTreeObj("treeDemo");
+        var selected_node = mytree.getSelectedNodes()[0];
+        console.log(selected_node);
+        newName = selected_node.name;
+        $.cookie("clicked_node", selected_node.mId, {path: '/'});
+        console.log("newRnode:" + $.cookie("clicked_node"));
+        if (newName.length == 0) {
+            $("#m_re_modal").modal("toggle");
+            return false;
+        }
+        var name_node_json = {id: selected_node.mId, name: newName};
+        $.ajax({
+            url: "{% url "rename_node" %}",
+            type: "GET",
+            contentType: "application/json; charset=utf-8",
+            data: name_node_json,
+            success: function (data) {
+                console.log(data);
+                if (data != "fail") {
+                    location.reload();
+                }
+            }
+        });
+        return true;
+    }
+
+    function addCases() {//新建用例集
+        var newNode = {name: "新建文件夹"};
+        mytree.addNodes(null, newNode);
+        var p_node = null;
+        var newnode_json = {parent: "0", name: "新建文件夹"};
+        var arr = mytree.getNodesByParam("level", "0", null);
+        newNode = arr[arr.length - 1];
+        mytree.editName(newNode);
+        $.cookie("clicked_node", "0", {path: '/'});
+        console.log("newCnode:" + $.cookie("clicked_node"));
+        $.ajax({
+            url: "{% url "add_folder_node" %}",
+            contentType: "application/json; charset=utf-8",
+            data: newnode_json,
+            success: function (data) {
+                console.log(data);
+                newNode.mId = data;
+{#                newNode.nocheck = false;#}
+            }
+        });
+    }
+
+    function addFolderNode() {
+        hideRMenu();
+        var newNode = {name: "新建文件夹"};
+        if (mytree.getSelectedNodes()[0]) {
+            newNode.checked = mytree.getSelectedNodes()[0].checked;
+            mytree.addNodes(mytree.getSelectedNodes()[0], newNode);
+            var p_node = mytree.getSelectedNodes()[0];
+            var newnode_json = {parent: p_node.mId, name: "新建文件夹"};
+            var arr = p_node.children;
+        } else {
+            mytree.addNodes(null, newNode);//添加根节点
+            var newnode_json = {parent: "0", name: "新建文件夹"};
+            var arr = mytree.getNodesByParam("level", "0", null);
+        }
+        newNode = arr[arr.length - 1];
+        mytree.editName(newNode);
+        $.cookie("clicked_node", p_node.mId, {path: '/'});
+        console.log("newFnode:" + $.cookie("clicked_node"));
+        $.ajax({
+            url: "{% url "add_folder_node" %}",
+            contentType: "application/json; charset=utf-8",
+            data: newnode_json,
+            success: function (data) {
+                newNode.mId = data;
+            }
+        });
+    }
+
+    function addCaseNode() {
+        hideRMenu();
+        var newNode = {name: "新建用例"};
+        if (mytree.getSelectedNodes()[0]) {
+            newNode.checked = mytree.getSelectedNodes()[0].checked;
+            mytree.addNodes(mytree.getSelectedNodes()[0], newNode);
+        } else {
+            mytree.addNodes(null, newNode);
+        }
+        var p_node = mytree.getSelectedNodes()[0];
+        var new_node_json = {parent: p_node.mId, name: "新建用例"};
+        arr = p_node.children;
+        newNode = arr[arr.length - 1];
+        console.log(newNode);
+        mytree.editName(newNode);
+        $.cookie("clicked_node", p_node.mId, {path: '/'});
+        console.log("newNode:" + $.cookie("clicked_node"));
+        $.ajax({
+            url: "{% url "add_case_node" %}",
+            contentType: "application/json; charset=utf-8",
+            data: new_node_json,
+            success: function (data) {
+                newNode.mId = data;
+                {#                var to_href = 'projects/' + {{ selected_project.id }}+'/testcases/' + newNode.mId;#}
+                {#                location.pathname = to_href;#}
+            }
+        });
+    }
+
+    function removeTreeNode() {
+        hideRMenu();
+        $("#m_del_modal").modal("toggle");
+    }
+
+    function del_Node() {
+        var nodes = mytree.getSelectedNodes();
+        var node_json = {parent: nodes[0].mId};
+        mytree.removeNode(nodes[0]);
+        $.ajax({
+            url: "{% url "remove_node" %}",
+            type: "GET",
+            contentType: "application/json; charset=utf-8",
+            data: node_json,
+            success: function (data) {
+                console.log(node_json);
+                console.log(data);
+            }
+        });
+        $('#m_del_modal').modal('hide')
+    }
+
+    function KeepLastTreeState(mytree) {
+        var clicked_node = $.cookie("clicked_node");
+        console.log("KeepLastTreeState(记录展开):" + clicked_node);
+        if (clicked_node != undefined) {
+            var expanded_node = mytree.getNodeByParam("mId", clicked_node, null);
+            if (expanded_node != null) {
+                // 如果不是叶子节点
+                if (expanded_node.isParent == true) {
+                    console.log("文件夹:" + expanded_node.mId);
+                    mytree.expandNode(expanded_node, true, true, true);
+                }
+                // 如果是叶子节点，则展开父节点
+                else {
+                    expanded_node = expanded_node.getParentNode();
+                    console.log("叶子节点:" + expanded_node.mId);
+                    mytree.expandNode(expanded_node, true, true, true);
+                }
+            }
+        }
+    }
+    // 修改account_bar链接属性，设置跳转链接
+    $("a#it_manage").attr("href", it_manage_url);
+    $("a#res_config").attr("href", res_config_url);
+
+    // Add the CSRF Token
+    var app = angular.module('execution'); // Not including a list of dependent modules (2nd parameter to `module`) "re-opens" the module for additional configuration
+    app.config(['$httpProvider', function ($httpProvider) {
+        $httpProvider.defaults.headers.common['X-CSRFToken'] = '{{ csrf_token|escapejs }}';
+    }]);
+
+</script>
+
+
+

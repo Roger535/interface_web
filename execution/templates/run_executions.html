@@ -1,0 +1,86 @@
+{% extends "angular_base.html" %}
+
+{% block angular-app %}
+    {% include "_exec_subnav.html" %}
+    <div ng-controller="RunExecution">
+
+        <div class="nav_top" style="border-bottom: 1px solid #d4d4d4;">
+            {% block nav_execution %}
+                {% verbatim %}
+                <select class="form-control" name="executions_menu" id="executions_menu"
+                        style="width:250px;margin-left: 5px" ng-model="selectedOption"
+                        ng-options="option.name as option.name for option in testsuites"
+                        ng-change="show_report()"></select>
+                {% endverbatim %}
+                <a type="button" class="btn btn-primary btn-sm" id="execution_new" style="margin-left: 35px"
+                   href="{% url 'new_suite' selected_project.id %}">新建执行集
+                </a>
+                <button type="button" class="btn btn-primary btn-sm" id="report_l" style="margin-left: 45px">查看报告
+                </button>
+                <button type="button" class="btn btn-primary btn-sm" id="execution_r" style="margin-left: 45px"
+                        ng-click="run_suite()">运行
+                </button>
+            {% endblock %}
+        </div>
+        <div class="row wrapper" style="overflow:hidden">
+            <div class="sidebar" style="margin-top: -12px;height: calc(100% - 170px);">
+                {% block nav-sidebar %}
+                    {% include "_navigation_side.html" %}
+                {% endblock %}
+            </div>
+            <div class="main" id="main"
+                 style="border-left:1px solid #eee;margin:5px 20px 5px 20px;padding:1px 10px 5px 0px; top: 125px;height: calc(100% - 170px);">
+                {% block main %}
+                    {% verbatim %}
+                    <div class="overview" id="overview"
+                         style="width:100%; height:12%; min-height:90px;border:1px solid #eee">
+                    <span for="execution_sum" class="col-sm-12 control-label"
+                          style="font-size: 18px;border-bottom: 1px solid #ddd;margin-bottom: 3px;">概述</span>
+                        <div class="col-sm-12">
+
+                            <div class="col-sm-4 control-label">
+                                <label for="execution_name">任务名称 :</label>
+                                <input type="text" value="{{ report.suite.name }}" readonly="readonly"></input>
+                            </div>
+                            <div class="col-sm-4 control-label">
+                                <label for="execution_res">执行结果 :</label>
+                                <input type="text" value="{{ report.result }}" readonly="readonly"></input>
+                            </div>
+                            <div class="col-sm-4 control-label">
+                                <label for="execution_creater">触发者 :</label>
+                                <input type="text" value="{{ report.runner.user.username }}"
+                                       readonly="readonly"></input>
+                            </div>
+                        </div>
+                        <div class="col-sm-12">
+                            <div class="col-sm-4 control-label">
+                                <label for="execution_start">开始时间 :</label>
+                                <input type="text" value="{{ report.start_time | date: 'yyyy-MM-dd HH:mm:ss' }}"
+                                       readonly="readonly"></input>
+                            </div>
+                            <div class="col-sm-4 control-label">
+                                <label for="execution_finish">结束时间 :</label>
+                                <input type="text" value="{{ report.end_time | date: 'yyyy-MM-dd HH:mm:ss' }}"
+                                       readonly="readonly"></input>
+                            </div>
+                            <div class="col-sm-4 control-label">
+                                <label for="execution_total">耗时 :</label>
+                                <input type="text" value="{{ report.duration }}" readonly="readonly"></input>
+                            </div>
+
+                        </div>
+                    </div>
+                    {% endverbatim %}
+                    <div class="result" id="result"
+                         style="width:100%;height:45%; min-height:320px; border:1px solid #eee">
+                    </div>
+                    <div class="trend" id="trend"
+                         style="width:100%;height:43%; min-height:300px; border:1px solid #eee"></div>
+                {% endblock %}
+            </div>
+            <div class="clear" style="clear:both"></div>
+        </div>
+
+    </div>
+
+{% endblock %}
