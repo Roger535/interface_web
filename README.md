@@ -51,6 +51,10 @@ python ./manage.py runserver
 
 - 接口测试使用的是[requests](http://docs.python-requests.org/zh_CN/latest/user/quickstart.html) 框架
 
+## 贡献者
+- [donghao](https://github.com/longmazhanfeng)
+- [orangehj](https://github.com/orangehj)
+- [wenne](https://github.com/wenneNetease)
 
 
 ## 已实现功能（截止2017.02.22）
